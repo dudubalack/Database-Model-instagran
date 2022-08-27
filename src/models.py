@@ -8,26 +8,49 @@ from eralchemy import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+class User(Base):
+    __tablename__ = 'user'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+    password = Column(String(250), nullable=False)
+    post = relationship("Post", back_populates="user")
+    coment = relationship("Coment", back_populates="user")
+    like = relationship("Like", back_populates="user")
 
-class Address(Base):
-    __tablename__ = 'address'
+class Post(Base):
+    __tablename__ = 'post'
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    coment = relationship("Coment", back_populates="post")
+    like = relationship("Like", back_populates="post")
+   
 
     def to_dict(self):
         return {}
+class Coment(Base):
+    __tablename__ = "coment"
+    id = Column(Integer, primary_key=True)
+    text = Column(String(250), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
+    like = relationship("Like", back_populates="post")
+    
+   
+
+class Like(Base):
+    __tablename__ = "like"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
+    coment_id = Column(Integer, ForeignKey('coment.id'))
+    
+
+
 
 ## Draw from SQLAlchemy base
 try:
@@ -36,3 +59,8 @@ try:
 except Exception as e:
     print("There was a problem genering the diagram")
     raise e
+
+
+
+
+    
